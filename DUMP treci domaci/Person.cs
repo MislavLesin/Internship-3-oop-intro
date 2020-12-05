@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DUMP_treci_domaci
 {
-    class Osoba
+    class Person
     {
         public string FirstName{ get; set; }
 

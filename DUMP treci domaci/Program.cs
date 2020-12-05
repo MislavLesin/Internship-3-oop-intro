@@ -8,7 +8,7 @@ namespace DUMP_treci_domaci
     {
         static void Main(string[] args)
         {
-            Dictionary < Event,List < Osoba >> data = new Dictionary<Event, List<Osoba>>();
+            Dictionary < Event,List < Person >> data = new Dictionary<Event, List<Person>>();
             var userInput = -1;
 
             while(userInput != 0)
@@ -56,7 +56,14 @@ namespace DUMP_treci_domaci
                         }
                         break;
                     case 6:
-                        ShowEventDetails(data);
+                        if(data.Count == 0)
+                        {
+                            Console.WriteLine("No events yet");
+                            PressAnyKeyToContinue();
+                        }
+                        else
+                            ShowEventDetails(data);
+
                         break;
                     case 99:
                         Initialize(data);
@@ -72,7 +79,7 @@ namespace DUMP_treci_domaci
                 }
             }
         }
-        static bool AddEvent(IDictionary<Event, List<Osoba>> eventData)
+        static bool AddEvent(IDictionary<Event, List<Person>> eventData)
         {
             Console.Clear();
             Console.WriteLine("==== Add event ====\n");
@@ -94,7 +101,7 @@ namespace DUMP_treci_domaci
                 return false;
             }
             var _newEvent = new Event();
-            List<Osoba> _newList = new List<Osoba>();
+            List<Person> _newList = new List<Person>();
             if(!EventDataVerification(_newEvent, eventData))
             {
                 Console.WriteLine("Canceled"); 
@@ -107,7 +114,7 @@ namespace DUMP_treci_domaci
             PressAnyKeyToContinue();
             return true;
         }
-        static bool RemovePersonFromEvent(IDictionary<Event, List<Osoba>> eventData)
+        static bool RemovePersonFromEvent(IDictionary<Event, List<Person>> eventData)
         {
             var indexCounter = 0;
             var personCounter = 0;
@@ -202,12 +209,12 @@ namespace DUMP_treci_domaci
             Console.ReadKey();
             Console.Clear();
         }
-        static bool EditEvent(IDictionary<Event, List<Osoba>> eventData)
+        static bool EditEvent(IDictionary<Event, List<Person>> eventData)
         {
             var eventBuffer = new Event();
             var eventCounter = 0;
-            List<Osoba> _list ;
-            List<Osoba> _listbuffer = new List<Osoba>();
+            List<Person> _list ;
+            List<Person> _listbuffer = new List<Person>();
             Console.Clear();
             
             Console.WriteLine("Enter event index to edit");
@@ -243,7 +250,7 @@ namespace DUMP_treci_domaci
                             return false;
                         }
                         else
-                            _list = new List<Osoba>();
+                            _list = new List<Person>();
 
                         var _newEvent = new Event();
                         eventBuffer = eData.Key;
@@ -265,7 +272,7 @@ namespace DUMP_treci_domaci
             Console.WriteLine("Something went wrong");
             return false;
         }
-        static void RemoveEvent(IDictionary<Event, List<Osoba>> eventData)
+        static void RemoveEvent(IDictionary<Event, List<Person>> eventData)
         {
             var index = 0;
             Console.Clear();
@@ -300,7 +307,7 @@ namespace DUMP_treci_domaci
                 PressAnyKeyToContinue();
             }
         }
-        static void Initialize(IDictionary<Event, List<Osoba>> eventData)
+        static void Initialize(IDictionary<Event, List<Person>> eventData)
         {
             //Adding 2 events and 2 attendants
             var startDate = new DateTime(2020, 01, 24, 12, 30, 0);
@@ -319,19 +326,19 @@ namespace DUMP_treci_domaci
             _event2.StartTime = startDate;
             _event2.EndTime = endDate;
 
-            var osoba1 = new Osoba();
+            var osoba1 = new Person();
             osoba1.FirstName = "Mislav";
             osoba1.LastName = "Lesin";
             osoba1.OIB = 123;
             osoba1.PhoneNumber = "091xxxxxxx";
 
-            var osoba2 = new Osoba();
+            var osoba2 = new Person();
             osoba2.FirstName = "Ante";
             osoba2.LastName = "Jerkov";
             osoba2.OIB = 124;
             osoba2.PhoneNumber = "091xxxxxxx";
 
-            List<Osoba> posjetitelji = new List<Osoba>();
+            List<Person> posjetitelji = new List<Person>();
             posjetitelji.Add(osoba1);
             posjetitelji.Add(osoba2);
 
@@ -344,7 +351,7 @@ namespace DUMP_treci_domaci
             eventData.Add(_event2, posjetitelji);
 
         }
-        static int SelectEvents(IDictionary<Event, List<Osoba>> eventData)
+        static int SelectEvents(IDictionary<Event, List<Person>> eventData)
         {
             var index = 0;
             Console.Clear();
@@ -359,16 +366,18 @@ namespace DUMP_treci_domaci
             Console.WriteLine();
             return (UserInputVerification(0, index - 1));
         }
-        static void PrintPersonInfo(Osoba Person)
+        static void PrintPersonInfo(Person Person)
         {
             Console.WriteLine();
             Console.WriteLine("First Name - " + Person.FirstName + "\n");
             Console.WriteLine("Last Name - " + Person.LastName + " \n");
             Console.WriteLine("Phone Number - " + Person.PhoneNumber);
         }
-        static bool ShowEventDetails(IDictionary<Event, List<Osoba>> eventData)
+        static bool ShowEventDetails(IDictionary<Event, List<Person>> eventData)
         {
             Console.Clear();
+            var eventCounter = 0;
+            var personCounter = 0;
             Console.WriteLine("Select print format: ");
             Console.Write("\n1 - Event Details \n");
             Console.WriteLine("\n2 - Person details per event \n");
@@ -380,13 +389,18 @@ namespace DUMP_treci_domaci
             else if (unos == 1)
             {
                 Console.Clear();
-                Console.WriteLine("\n++++++++++++++++++\n");
+                Console.WriteLine("\n=========================================\n");
                 foreach (var kvp in eventData)
                 {
+
+                    Console.WriteLine("Event [{0}]", eventCounter + 1);
                     PrintEventData(kvp.Key);
                     Console.WriteLine("Attendants - " + kvp.Value.Count);
-                    Console.WriteLine("\n==========================\n");
+                    Console.WriteLine("\n=========================================\n");
+                    eventCounter++;
                 }
+                PressAnyKeyToContinue();
+                return true;
             }
             else if (unos == 2)
             {
@@ -394,7 +408,7 @@ namespace DUMP_treci_domaci
                 var eventIndex = SelectEvents(eventData);
                 if (eventIndex == -1)
                     return false;
-                var eventCounter = 0;
+                eventCounter = 0;
                 foreach (var kvp in eventData)
                 {
                     if (eventCounter == eventIndex)
@@ -405,42 +419,59 @@ namespace DUMP_treci_domaci
                         }
                         else
                         {
+                            Console.Clear();
+                            Console.WriteLine("\n==========================================\n");
                             foreach (var Person in kvp.Value)
                             {
+                                Console.WriteLine("Person [{0}]", personCounter + 1);
                                 PrintPersonInfo(Person);
-                                Console.WriteLine("==========================================");
+                                Console.WriteLine("\n==========================================\n");
+                                personCounter++;
                             }
                         }
                     }
                     eventCounter++;
                 }
+                PressAnyKeyToContinue();
+                return true;
             }
             else if (unos == 3)
             {
                 Console.Clear();
                 foreach (var kvp in eventData)
                 {
+                    personCounter = 0;
+                    Console.WriteLine("\n============================================================\n");
+                    Console.WriteLine("Event [{0}]", eventCounter + 1);
                     PrintEventData(kvp.Key);
                     Console.WriteLine("Attendants - " + kvp.Value.Count);
-                    Console.WriteLine("\n==========================\n");
-                    Console.WriteLine("Persons attending : \n");
-                    foreach (var person in kvp.Value)
+                    Console.WriteLine("\n------------------------------------------\n");
+                    if(kvp.Value.Count == 0)
                     {
-                        Console.WriteLine();
-                        PrintPersonInfo(person);
-                        Console.WriteLine("====================================================");
-
+                        Console.WriteLine("This event has no participants");
+                        Console.WriteLine("\n------------------------------------------\n");
                     }
-                    Console.WriteLine("\n++++++++++++++++++++++++++++++++++++\n");
+                    else
+                    {
+                        Console.WriteLine("Persons attending : \n");
+                        foreach (var person in kvp.Value)
+                        {
+                            Console.WriteLine("Person [{0}]\n", personCounter + 1);
+                            PrintPersonInfo(person);
+                            Console.WriteLine("\n------------------------------------------\n");
+                            personCounter++;
+                        }
+                    }
+                    eventCounter++;
                 }
             }
-            Console.WriteLine("");
+            Console.WriteLine("\n============================================================\n");
             Console.WriteLine("Press any key to ocntinue");
             Console.ReadKey();
             Console.Clear();
             return true;
         }
-        static void AddPersonToEvent(IDictionary<Event, List<Osoba>> eventData)
+        static void AddPersonToEvent(IDictionary<Event, List<Person>> eventData)
         {
             if (eventData.Count == 0)
             {
@@ -489,10 +520,10 @@ namespace DUMP_treci_domaci
             }
             return returnValue;
         }
-        static void PersonDataInput(List<Osoba> PersonList)
+        static void PersonDataInput(List<Person> PersonList)
         {
             var personAlreadyAdded = false;
-            var personData = new Osoba();
+            var personData = new Person();
             Console.Clear();
             Console.WriteLine("==== Person Data Input ====\n");
 
@@ -529,7 +560,7 @@ namespace DUMP_treci_domaci
                 PressAnyKeyToContinue();
             } 
         }
-        static bool EventDataVerification(Event InputEvent, IDictionary<Event, List<Osoba>> Podaci)
+        static bool EventDataVerification(Event InputEvent, IDictionary<Event, List<Person>> Podaci)
         {
             var bufferEvent = InputEvent;
             Console.Clear();
