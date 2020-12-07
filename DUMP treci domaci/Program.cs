@@ -150,6 +150,7 @@ namespace DUMP_treci_domaci
                         Console.WriteLine();
                         personCounter++;
                     }
+                    indexCounter++;
                 }
                 else
                     indexCounter++;
@@ -551,6 +552,7 @@ namespace DUMP_treci_domaci
                 {
                     Console.WriteLine("\n" + person.FirstName + " is allready on event list!\n");
                     personAlreadyAdded = true;
+                    PressAnyKeyToContinue();
                 }    
             }
             if (personAlreadyAdded == false)
@@ -647,7 +649,16 @@ namespace DUMP_treci_domaci
 
                     endDate = new DateTime(godina, mjesec, dan, sat, minute, 0);
 
-                    foreach(var _event in Podaci)      
+                    if (DateTime.Compare(startDate, endDate) >= 0)
+                    {
+                        Console.WriteLine("\nEnd date has to be after start date!!");
+                        Console.WriteLine("Try again");
+                        dateValidFlag = false;
+                        PressAnyKeyToContinue();
+                        Console.WriteLine("Start date is : " + startDate);
+                        continue;
+                    }
+                    foreach (var _event in Podaci)      
                     {
                         if(((_event.Key.StartTime <= startDate) && (_event.Key.EndTime >= startDate)) || 
                             ((_event.Key.StartTime <= endDate) && (_event.Key.EndTime >= endDate)) || 
@@ -674,24 +685,19 @@ namespace DUMP_treci_domaci
                             dateValidFlag = false;
                             break;
                         }
-                        else if (DateTime.Compare(startDate, endDate) >= 0)
-                        {
-                            Console.WriteLine("\nEnd date has to be after start date!!");
-                            Console.WriteLine("Try again");
-                            dateValidFlag = false;
-                            PressAnyKeyToContinue();
-                            Console.WriteLine("Start date is : " + startDate);
-                        }
-                        else
-                        {
-                            dateValidFlag = true;
-                            Console.WriteLine();
-                            Console.WriteLine("Date valid ");
-                            break;
-                        }
-                    }
+                       
 
-                    
+
+                       
+                    }
+                    dateValidFlag = true;
+                    Console.WriteLine();
+                    Console.WriteLine("Date valid ");
+                    break;
+
+
+
+
 
                 } while (dateValidFlag == false);
             }
